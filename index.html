@@ -64,13 +64,19 @@
 
     .header-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; }
 
-    .language-select {
-      width: 68px;
+    .language-button {
+      width: 52px;
       height: 44px;
-      padding-left: 12px;
+      flex: 0 0 52px;
+      padding: 0;
+      border: 1px solid rgba(255,255,255,.09);
       border-radius: 14px;
+      color: var(--text);
+      background: rgba(255,255,255,.06);
       font-weight: 750;
     }
+
+    .language-button:active { transform: scale(.96); }
 
     h1 {
       min-width: 0;
@@ -118,13 +124,6 @@
       background-position: calc(100% - 18px) 20px, calc(100% - 13px) 20px;
       background-size: 5px 5px, 5px 5px;
       background-repeat: no-repeat;
-    }
-
-    select.language-select {
-      width: 76px;
-      height: 44px;
-      padding: 0 25px 0 11px;
-      background-position: calc(100% - 14px) 18px, calc(100% - 9px) 18px;
     }
 
     .mode-summary {
@@ -374,10 +373,7 @@
     <header>
       <h1 id="appTitle">Разговоры и Zut!</h1>
       <div class="header-actions">
-        <select class="language-select" id="language" aria-label="Язык / Language">
-          <option value="ru">RU</option>
-          <option value="en">EN</option>
-        </select>
+        <button class="language-button" id="language" type="button" aria-label="Switch to English">RU</button>
         <button class="icon-button" id="helpButton" type="button" aria-label="Справка">?</button>
       </div>
     </header>
@@ -2115,7 +2111,7 @@
         ? storedLanguage
         : (browserLanguage.indexOf("ru") === 0 ? "ru" : "en");
 
-      var languageSelect = document.getElementById("language");
+      var languageButton = document.getElementById("language");
       var modeSelect = document.getElementById("mode");
       var categorySelect = document.getElementById("category");
       var modeSummary = document.getElementById("modeSummary");
@@ -2212,7 +2208,6 @@
       if (!categorySelect.value) categorySelect.value = "all";
       var savedMode = String(store.get("mode", "questions"));
       modeSelect.value = ["questions", "zut", "mixed"].indexOf(savedMode) === -1 ? "questions" : savedMode;
-      languageSelect.value = language;
 
       function localizeCategoryOptions() {
         categorySelect.children[0].textContent = tr("allTopics");
@@ -2225,7 +2220,8 @@
       function applyLanguageUi() {
         document.documentElement.lang = language;
         document.title = tr("documentTitle");
-        languageSelect.value = language;
+        languageButton.textContent = language.toUpperCase();
+        languageButton.setAttribute("aria-label", language === "ru" ? "Switch to English" : "Переключить на русский");
         modeQuestionsOption.textContent = tr("questionsMode");
         modeMixedOption.textContent = tr("mixedMode");
         timerReset.textContent = tr("timerReset");
@@ -2416,8 +2412,8 @@
         draw();
       });
 
-      languageSelect.addEventListener("change", function () {
-        language = languageSelect.value === "ru" ? "ru" : "en";
+      languageButton.addEventListener("click", function () {
+        language = language === "ru" ? "en" : "ru";
         store.set("language", language);
         applyLanguageUi();
       });
